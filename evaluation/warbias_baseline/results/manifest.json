@@ -1,0 +1,879 @@
+{
+  "schema_version": 1,
+  "kind": "warbias_baseline_results",
+  "source": {
+    "repo": "the-project/WarBias",
+    "revision": "6f83eed95341fbf3fe6e846f9dcbb148f6387bc166461bd6483824af7b427732",
+    "revision_kind": "content_sha256",
+    "dataset_manifest_sha256": "6f83eed95341fbf3fe6e846f9dcbb148f6387bc166461bd6483824af7b427732",
+    "qa_manifest_sha256": "e8307a4d480603321705ec8135963b59f4df53a9e493ee5152434df9deecd218",
+    "files": {
+      "triplets_uk": {
+        "filename": "data/uk.jsonl",
+        "sha256": "849e15e3eb444313f0d2914d20e79550c3f6dcb8f572bd24308a2bbd40af8dd5",
+        "path": "sources/data/uk.jsonl"
+      },
+      "triplets_en": {
+        "filename": "data/en.jsonl",
+        "sha256": "59b34443081b7e0e0df5e0c2c0e126ad238e5a1b2db91df153d9bfb29738cc8f",
+        "path": "sources/data/en.jsonl"
+      },
+      "qa_uk": {
+        "filename": "data/qa_uk.jsonl",
+        "sha256": "1f023e27b7bfd1b90c2251f284d4bc6ccfad67bcf251089ca774823f4b0a334d",
+        "path": "sources/data/qa_uk.jsonl"
+      },
+      "qa_en": {
+        "filename": "data/qa_en.jsonl",
+        "sha256": "6436190d503cfe97859ec9c3183901d292f0de01358887f18675f8f87f07a7f5",
+        "path": "sources/data/qa_en.jsonl"
+      },
+      "taxonomy": {
+        "filename": "protocol/inputs/cohort_taxonomy.csv",
+        "sha256": "117b39a77c2ea333bc6625908bf47a40f43e2b88c5cc1ba3465cc75957f514b8",
+        "path": "sources/protocol/inputs/cohort_taxonomy.csv"
+      },
+      "item_sources": {
+        "filename": "protocol/inputs/dataset_item_sources.jsonl",
+        "sha256": "300379f69fda3c849ea0164b873bf5fd6282ac8a168a09218135d560725083d0",
+        "path": "sources/protocol/inputs/dataset_item_sources.jsonl"
+      },
+      "text_provenance": {
+        "filename": "protocol/inputs/dataset_text_provenance.jsonl",
+        "sha256": "eff4a46dec2db0cc49db9ee9380be4dbe783354ae9fdbccc023a0b5c9f5431ba",
+        "path": "sources/protocol/inputs/dataset_text_provenance.jsonl"
+      },
+      "dataset_protocol": {
+        "filename": "protocol/dataset.json",
+        "sha256": "6f83eed95341fbf3fe6e846f9dcbb148f6387bc166461bd6483824af7b427732",
+        "path": "sources/protocol/dataset.json"
+      },
+      "qa_protocol": {
+        "filename": "protocol/qa.json",
+        "sha256": "e8307a4d480603321705ec8135963b59f4df53a9e493ee5152434df9deecd218",
+        "path": "sources/protocol/qa.json"
+      },
+      "metadata_corrections": {
+        "filename": "protocol/dataset_metadata_corrections.json",
+        "sha256": "1f94b70642faf37bd4f76b983583d2655f79627cf66f61ef9040a273bdd99ca7",
+        "path": "sources/protocol/dataset_metadata_corrections.json"
+      }
+    },
+    "external_inputs": {
+      "data/uk.jsonl": {
+        "sha256": "849e15e3eb444313f0d2914d20e79550c3f6dcb8f572bd24308a2bbd40af8dd5",
+        "bytes": 798755
+      },
+      "data/en.jsonl": {
+        "sha256": "59b34443081b7e0e0df5e0c2c0e126ad238e5a1b2db91df153d9bfb29738cc8f",
+        "bytes": 604276
+      },
+      "protocol/inputs/dataset_item_sources.jsonl": {
+        "sha256": "300379f69fda3c849ea0164b873bf5fd6282ac8a168a09218135d560725083d0",
+        "bytes": 383647
+      },
+      "protocol/inputs/dataset_text_provenance.jsonl": {
+        "sha256": "eff4a46dec2db0cc49db9ee9380be4dbe783354ae9fdbccc023a0b5c9f5431ba",
+        "bytes": 394277
+      },
+      "protocol/dataset.json": {
+        "sha256": "6f83eed95341fbf3fe6e846f9dcbb148f6387bc166461bd6483824af7b427732",
+        "bytes": 5292
+      },
+      "protocol/dataset_metadata_corrections.json": {
+        "sha256": "1f94b70642faf37bd4f76b983583d2655f79627cf66f61ef9040a273bdd99ca7",
+        "bytes": 1145
+      },
+      "evaluation/warbias_baseline/neutral_controls.jsonl": {
+        "sha256": "d448327dbb3d835d2a090daefaa2bb242f5c44d6f44fe71e75e7bee1e01b8f7a",
+        "bytes": 2805109
+      }
+    },
+    "snapshot_sha256": "c7e8a67eeabedb32474db59b1902f537261383ce3bdc1476c6827e7030d9b3e2"
+  },
+  "inputs": {
+    "bundle_sha256": "09f900397ffca6372a73c1936c348c168dc1411b924a520fd0042a2b6736865c",
+    "models_sha256": "4fa1e7bce0df4e220049dca1a26f2edf40f9b1f39c1f46bf6935b39da0008a7e"
+  },
+  "inference_inputs": {
+    "bundle_sha256": "002fd2b05c35de35199321c895fb9119f153c2f9ee100d6dcc19349334180249",
+    "models_sha256": "6097602ba6804d5c54693deff936580b64727aa43ac52e0fdb845840570485fb"
+  },
+  "metadata_corrections": {
+    "declarations_sha256": "1f94b70642faf37bd4f76b983583d2655f79627cf66f61ef9040a273bdd99ca7",
+    "changed_triplets": [
+      {
+        "task": "warbias_triplets_annotated_uk",
+        "id": "WB-0926",
+        "original_case_id": "WB-C082",
+        "case_id": "WB-C058"
+      },
+      {
+        "task": "warbias_triplets_annotated_en",
+        "id": "WB-0926",
+        "original_case_id": "WB-C082",
+        "case_id": "WB-C058"
+      }
+    ]
+  },
+  "bootstrap": {
+    "draws": 1000,
+    "seed": 42,
+    "level": 0.95
+  },
+  "weighting": "Equal original claim components after within-component averaging; keep profile and language variants together.",
+  "units": {
+    "rates": "proportion",
+    "signed_bias": "[-1,1]",
+    "association_margin": {
+      "per_token": "nats/token",
+      "per_byte": "nats/UTF-8 byte",
+      "sum": "nats",
+      "prior_normalised": "nats"
+    }
+  },
+  "models": [
+    {
+      "id": "qwen3_8b",
+      "repository": "Qwen/Qwen3-8B",
+      "revision": "b968826d9c46dd6066d109eabc6255188de91218",
+      "tokenizer_revision": "b968826d9c46dd6066d109eabc6255188de91218",
+      "config_sha256": "f7c4eadfbbf522470667b797a3c89be2524832d2d599797248dc304fff447c30",
+      "directory": "Qwen3-8B",
+      "runs": {
+        "warbias_triplets_annotated_uk": {
+          "run_json_sha256": "a9fde3e786849ddcb3b702b5b3072c2f81f4cee33767eeea4b0fc26d594f406d",
+          "predictions_sha256": "ff42265cfa562c131a46d291cbab82b6a7ed028ba79ba8bf823d01503b641bdb"
+        },
+        "warbias_uk": {
+          "run_json_sha256": "06d3875f3a812f004f2507ad8011d0808d69dfa546e0d43483d5e59807266fbd",
+          "predictions_sha256": "32cc3bab169aefa7dbbab00d6bf207221c09152780131d1a4ba0c27c11d79199"
+        },
+        "warbias_triplets_annotated_en": {
+          "run_json_sha256": "3dae6f4ddef75c9afaa01e5f2e23e209df10fc2a3834243acc140eaa67487946",
+          "predictions_sha256": "af2d3a5e117c7bfc87bf6dbe69c5a46bfab62ecf10ab144c127c77b9bb38261a"
+        },
+        "warbias_en": {
+          "run_json_sha256": "d04205a18d1b300eca747e395cf4fde7d704324426fc186f71ed68a88af7073a",
+          "predictions_sha256": "342364794ce9792ea63944932dda6e6ebe61fd8836857098464025d286b6720b"
+        }
+      },
+      "neutral_runs": {
+        "uk": {
+          "run_json_sha256": "35286e885954f46af5806144218693fc3140285e80af41f33f8aeb58a6f13434",
+          "predictions_sha256": "0187efd4be418db509e85cb6edb134a329640307a11d29db692a748f682e2fdd"
+        },
+        "en": {
+          "run_json_sha256": "06a394e9be4670a9650a4aaf27fed7310cdd02e87ba09ac4ab6581f88af40cde",
+          "predictions_sha256": "b08db642f2d8ad1877267a01dedcfc5845b6b9319663a4a1fa04b18890b85d66"
+        }
+      },
+      "qa_parsing": {
+        "uk": {
+          "native_policy": "abc_option_text_v2",
+          "analysis_policy": "abc_explicit_choice_v3",
+          "definition": "Accept the native ABC/exact-option forms, Answer:/\u0412\u0456\u0434\u043f\u043e\u0432\u0456\u0434\u044c: prefixes, a unique exact option with one terminal period, or an explicit first answer block followed by a blank line and explanation. Reject conflicting answer declarations, inconsistent label/text pairs and prose without an explicit choice. Strict format still requires a bare letter.",
+          "strict_format": "A single bare A, B or C, ignoring surrounding whitespace and letter case.",
+          "rows": 240,
+          "native_method_counts": {
+            "bare_letter": 240
+          },
+          "analysis_method_counts": {
+            "bare_letter": 240
+          },
+          "changed_choices": [],
+          "changed_choice_count": 0
+        },
+        "en": {
+          "native_policy": "abc_option_text_v2",
+          "analysis_policy": "abc_explicit_choice_v3",
+          "definition": "Accept the native ABC/exact-option forms, Answer:/\u0412\u0456\u0434\u043f\u043e\u0432\u0456\u0434\u044c: prefixes, a unique exact option with one terminal period, or an explicit first answer block followed by a blank line and explanation. Reject conflicting answer declarations, inconsistent label/text pairs and prose without an explicit choice. Strict format still requires a bare letter.",
+          "strict_format": "A single bare A, B or C, ignoring surrounding whitespace and letter case.",
+          "rows": 240,
+          "native_method_counts": {
+            "invalid": 4,
+            "labeled_option": 236
+          },
+          "analysis_method_counts": {
+            "labeled_option": 236,
+            "prefixed_bare_letter": 1,
+            "prefixed_labeled_option": 3
+          },
+          "changed_choices": [
+            {
+              "id": "WBQA-0077",
+              "native_index": -1,
+              "analysis_index": 1,
+              "native_method": "invalid",
+              "analysis_method": "prefixed_bare_letter"
+            },
+            {
+              "id": "WBQA-0092",
+              "native_index": -1,
+              "analysis_index": 1,
+              "native_method": "invalid",
+              "analysis_method": "prefixed_labeled_option"
+            },
+            {
+              "id": "WBQA-0122",
+              "native_index": -1,
+              "analysis_index": 2,
+              "native_method": "invalid",
+              "analysis_method": "prefixed_labeled_option"
+            },
+            {
+              "id": "WBQA-0170",
+              "native_index": -1,
+              "analysis_index": 2,
+              "native_method": "invalid",
+              "analysis_method": "prefixed_labeled_option"
+            }
+          ],
+          "changed_choice_count": 4
+        }
+      }
+    },
+    {
+      "id": "llama31_8b_instruct",
+      "repository": "meta-llama/Llama-3.1-8B-Instruct",
+      "revision": "0e9e39f249a16976918f6564b8830bc894c89659",
+      "tokenizer_revision": "0e9e39f249a16976918f6564b8830bc894c89659",
+      "config_sha256": "29e4c210b0d6ac178b16b2a255a568bdb23b581e50ca1ef6a6d071dd85704e6e",
+      "directory": "Llama-3.1-8B-Instruct",
+      "runs": {
+        "warbias_triplets_annotated_uk": {
+          "run_json_sha256": "8fff79d3d6f4d7ef4731f40d4cbd67213ba97bfdac74ae5a8a0c95832333455a",
+          "predictions_sha256": "b87f96bdccdb99220efeb688f6986d4cd6296a312a8b23f15f7da755bc198ce9"
+        },
+        "warbias_uk": {
+          "run_json_sha256": "484af6a5a38b522e489e4d7afeba76a6b8e25f25744a1ea75d3aff88a753daa4",
+          "predictions_sha256": "2c3f8641eead0775c8c46ff4766020113cf522918f5f22ecfae694f73542f728"
+        },
+        "warbias_triplets_annotated_en": {
+          "run_json_sha256": "095738a2443994106c82fa1f3c38faff04fbbadb0c280051b5945da010f83907",
+          "predictions_sha256": "9e52f502131ef17a50241a462e21bcdfaf04190f4ee59a242c7f7b8acfb34a0a"
+        },
+        "warbias_en": {
+          "run_json_sha256": "a470014b2c44f8d116b73f31f7cc9278857ba93045deb61d224b3ef4f4ef2082",
+          "predictions_sha256": "0d55319788b792f07143f308cfdcb19b50349a4d8522648b465f8bb84365317c"
+        }
+      },
+      "neutral_runs": {
+        "uk": {
+          "run_json_sha256": "ba112406ae7e36ee020ae5d1e19acea03c3de2aa4728e3c6d03506921a5f283a",
+          "predictions_sha256": "966573a67ad8f3d96c63168293d1bbfab1348a6eeaed4dd7560900c372699510"
+        },
+        "en": {
+          "run_json_sha256": "778a7586dd8456acc21c1fd74368d86d6e73704394cb51a1f67bbc87d36b9fd2",
+          "predictions_sha256": "fd3d4498432b6af6cf4810e599dd58086539bce7280de08ac6a3f4bb26e88cd7"
+        }
+      },
+      "qa_parsing": {
+        "uk": {
+          "native_policy": "abc_option_text_v2",
+          "analysis_policy": "abc_explicit_choice_v3",
+          "definition": "Accept the native ABC/exact-option forms, Answer:/\u0412\u0456\u0434\u043f\u043e\u0432\u0456\u0434\u044c: prefixes, a unique exact option with one terminal period, or an explicit first answer block followed by a blank line and explanation. Reject conflicting answer declarations, inconsistent label/text pairs and prose without an explicit choice. Strict format still requires a bare letter.",
+          "strict_format": "A single bare A, B or C, ignoring surrounding whitespace and letter case.",
+          "rows": 240,
+          "native_method_counts": {
+            "bare_letter": 213,
+            "invalid": 4,
+            "labeled_option": 12,
+            "punctuated_letter": 11
+          },
+          "analysis_method_counts": {
+            "bare_letter": 213,
+            "exact_option_terminal_period": 1,
+            "explicit_block_bare_letter": 2,
+            "invalid": 1,
+            "labeled_option": 12,
+            "punctuated_letter": 11
+          },
+          "changed_choices": [
+            {
+              "id": "WBQA-0001",
+              "native_index": -1,
+              "analysis_index": 2,
+              "native_method": "invalid",
+              "analysis_method": "explicit_block_bare_letter"
+            },
+            {
+              "id": "WBQA-0193",
+              "native_index": -1,
+              "analysis_index": 2,
+              "native_method": "invalid",
+              "analysis_method": "explicit_block_bare_letter"
+            },
+            {
+              "id": "WBQA-0206",
+              "native_index": -1,
+              "analysis_index": 2,
+              "native_method": "invalid",
+              "analysis_method": "exact_option_terminal_period"
+            }
+          ],
+          "changed_choice_count": 3
+        },
+        "en": {
+          "native_policy": "abc_option_text_v2",
+          "analysis_policy": "abc_explicit_choice_v3",
+          "definition": "Accept the native ABC/exact-option forms, Answer:/\u0412\u0456\u0434\u043f\u043e\u0432\u0456\u0434\u044c: prefixes, a unique exact option with one terminal period, or an explicit first answer block followed by a blank line and explanation. Reject conflicting answer declarations, inconsistent label/text pairs and prose without an explicit choice. Strict format still requires a bare letter.",
+          "strict_format": "A single bare A, B or C, ignoring surrounding whitespace and letter case.",
+          "rows": 240,
+          "native_method_counts": {
+            "bare_letter": 122,
+            "invalid": 22,
+            "punctuated_letter": 96
+          },
+          "analysis_method_counts": {
+            "bare_letter": 122,
+            "explicit_block_bare_letter": 20,
+            "explicit_block_labeled_option": 2,
+            "punctuated_letter": 96
+          },
+          "changed_choices": [
+            {
+              "id": "WBQA-0002",
+              "native_index": -1,
+              "analysis_index": 2,
+              "native_method": "invalid",
+              "analysis_method": "explicit_block_bare_letter"
+            },
+            {
+              "id": "WBQA-0008",
+              "native_index": -1,
+              "analysis_index": 0,
+              "native_method": "invalid",
+              "analysis_method": "explicit_block_bare_letter"
+            },
+            {
+              "id": "WBQA-0010",
+              "native_index": -1,
+              "analysis_index": 2,
+              "native_method": "invalid",
+              "analysis_method": "explicit_block_bare_letter"
+            },
+            {
+              "id": "WBQA-0025",
+              "native_index": -1,
+              "analysis_index": 1,
+              "native_method": "invalid",
+              "analysis_method": "explicit_block_labeled_option"
+            },
+            {
+              "id": "WBQA-0050",
+              "native_index": -1,
+              "analysis_index": 0,
+              "native_method": "invalid",
+              "analysis_method": "explicit_block_bare_letter"
+            },
+            {
+              "id": "WBQA-0073",
+              "native_index": -1,
+              "analysis_index": 2,
+              "native_method": "invalid",
+              "analysis_method": "explicit_block_bare_letter"
+            },
+            {
+              "id": "WBQA-0098",
+              "native_index": -1,
+              "analysis_index": 0,
+              "native_method": "invalid",
+              "analysis_method": "explicit_block_bare_letter"
+            },
+            {
+              "id": "WBQA-0110",
+              "native_index": -1,
+              "analysis_index": 2,
+              "native_method": "invalid",
+              "analysis_method": "explicit_block_bare_letter"
+            },
+            {
+              "id": "WBQA-0122",
+              "native_index": -1,
+              "analysis_index": 2,
+              "native_method": "invalid",
+              "analysis_method": "explicit_block_bare_letter"
+            },
+            {
+              "id": "WBQA-0145",
+              "native_index": -1,
+              "analysis_index": 2,
+              "native_method": "invalid",
+              "analysis_method": "explicit_block_bare_letter"
+            },
+            {
+              "id": "WBQA-0146",
+              "native_index": -1,
+              "analysis_index": 2,
+              "native_method": "invalid",
+              "analysis_method": "explicit_block_bare_letter"
+            },
+            {
+              "id": "WBQA-0152",
+              "native_index": -1,
+              "analysis_index": 2,
+              "native_method": "invalid",
+              "analysis_method": "explicit_block_bare_letter"
+            },
+            {
+              "id": "WBQA-0157",
+              "native_index": -1,
+              "analysis_index": 2,
+              "native_method": "invalid",
+              "analysis_method": "explicit_block_bare_letter"
+            },
+            {
+              "id": "WBQA-0161",
+              "native_index": -1,
+              "analysis_index": 1,
+              "native_method": "invalid",
+              "analysis_method": "explicit_block_bare_letter"
+            },
+            {
+              "id": "WBQA-0182",
+              "native_index": -1,
+              "analysis_index": 0,
+              "native_method": "invalid",
+              "analysis_method": "explicit_block_bare_letter"
+            },
+            {
+              "id": "WBQA-0193",
+              "native_index": -1,
+              "analysis_index": 2,
+              "native_method": "invalid",
+              "analysis_method": "explicit_block_bare_letter"
+            },
+            {
+              "id": "WBQA-0194",
+              "native_index": -1,
+              "analysis_index": 1,
+              "native_method": "invalid",
+              "analysis_method": "explicit_block_bare_letter"
+            },
+            {
+              "id": "WBQA-0206",
+              "native_index": -1,
+              "analysis_index": 2,
+              "native_method": "invalid",
+              "analysis_method": "explicit_block_bare_letter"
+            },
+            {
+              "id": "WBQA-0218",
+              "native_index": -1,
+              "analysis_index": 0,
+              "native_method": "invalid",
+              "analysis_method": "explicit_block_bare_letter"
+            },
+            {
+              "id": "WBQA-0229",
+              "native_index": -1,
+              "analysis_index": 2,
+              "native_method": "invalid",
+              "analysis_method": "explicit_block_bare_letter"
+            },
+            {
+              "id": "WBQA-0230",
+              "native_index": -1,
+              "analysis_index": 2,
+              "native_method": "invalid",
+              "analysis_method": "explicit_block_bare_letter"
+            },
+            {
+              "id": "WBQA-0235",
+              "native_index": -1,
+              "analysis_index": 1,
+              "native_method": "invalid",
+              "analysis_method": "explicit_block_labeled_option"
+            }
+          ],
+          "changed_choice_count": 22
+        }
+      }
+    },
+    {
+      "id": "gemma3_12b_it",
+      "repository": "google/gemma-3-12b-it",
+      "revision": "96b6f1eccf38110c56df3a15bffe176da04bfd80",
+      "tokenizer_revision": "96b6f1eccf38110c56df3a15bffe176da04bfd80",
+      "config_sha256": "39172c4124d3470341bbbb25f2926fd97edf68f0fe3a9fa4cde6acb9b7ed2cc6",
+      "directory": "gemma-3-12b-it",
+      "runs": {
+        "warbias_triplets_annotated_uk": {
+          "run_json_sha256": "aaf9c94cd01237247ff8ab6bc5aa3a3db2b87716192b06444b567f979c9e239b",
+          "predictions_sha256": "2cd36b9d3be8bc47fddb97e608f99fd2ffcf7cfa58a4f9d832ec10bce39438ef"
+        },
+        "warbias_uk": {
+          "run_json_sha256": "36c42438621163347d6032132ad7dfcf589ed29802089bb33d074976d574fac0",
+          "predictions_sha256": "40d0f704696ca35eb474c715f1d47075aec94cf604e7a12f5f23c237184fbb4f"
+        },
+        "warbias_triplets_annotated_en": {
+          "run_json_sha256": "838605871ea42d77c667073ebff42d0896526007870f564a25c5fda995663c2c",
+          "predictions_sha256": "bddbf3351d38018957bfaadd2f949265b430d715fd9700e3a0171ea2beafa5b3"
+        },
+        "warbias_en": {
+          "run_json_sha256": "a0a7ad6e4c6bee448a42aaaed29d653da68e4e78842404dd71dbf935ede761eb",
+          "predictions_sha256": "1dbef58d89008c71dc477ba25879ca8f0fac1b0e7b4e8b0e2b67fd8bf830392c"
+        }
+      },
+      "neutral_runs": {
+        "uk": {
+          "run_json_sha256": "8151beab2094c59b6bc31f575fcfa0c0e418d46b0f7088b85f14404738dcaa32",
+          "predictions_sha256": "1f4d2ef6cb19e46b68f5088c9e3f21504f5b8847145cae6c6dfb184b39b1e013"
+        },
+        "en": {
+          "run_json_sha256": "b1200808b24ea4db1046efa8eb2c79926d1562ba43220bb36f2eff08eaa98cf7",
+          "predictions_sha256": "a774f6cc883e8a98bb6e6743181538ca8cdcf0dc10ff1f87167124b459977484"
+        }
+      },
+      "qa_parsing": {
+        "uk": {
+          "native_policy": "abc_option_text_v2",
+          "analysis_policy": "abc_explicit_choice_v3",
+          "definition": "Accept the native ABC/exact-option forms, Answer:/\u0412\u0456\u0434\u043f\u043e\u0432\u0456\u0434\u044c: prefixes, a unique exact option with one terminal period, or an explicit first answer block followed by a blank line and explanation. Reject conflicting answer declarations, inconsistent label/text pairs and prose without an explicit choice. Strict format still requires a bare letter.",
+          "strict_format": "A single bare A, B or C, ignoring surrounding whitespace and letter case.",
+          "rows": 240,
+          "native_method_counts": {
+            "bare_letter": 240
+          },
+          "analysis_method_counts": {
+            "bare_letter": 240
+          },
+          "changed_choices": [],
+          "changed_choice_count": 0
+        },
+        "en": {
+          "native_policy": "abc_option_text_v2",
+          "analysis_policy": "abc_explicit_choice_v3",
+          "definition": "Accept the native ABC/exact-option forms, Answer:/\u0412\u0456\u0434\u043f\u043e\u0432\u0456\u0434\u044c: prefixes, a unique exact option with one terminal period, or an explicit first answer block followed by a blank line and explanation. Reject conflicting answer declarations, inconsistent label/text pairs and prose without an explicit choice. Strict format still requires a bare letter.",
+          "strict_format": "A single bare A, B or C, ignoring surrounding whitespace and letter case.",
+          "rows": 240,
+          "native_method_counts": {
+            "bare_letter": 240
+          },
+          "analysis_method_counts": {
+            "bare_letter": 240
+          },
+          "changed_choices": [],
+          "changed_choice_count": 0
+        }
+      }
+    },
+    {
+      "id": "lapa12b_instruct",
+      "repository": "lapa-llm/lapa-v0.1.2-instruct",
+      "revision": "2969fd997f07b33727c6f10795d78ef23cc5c037",
+      "tokenizer_revision": "2969fd997f07b33727c6f10795d78ef23cc5c037",
+      "config_sha256": "f02a640a945f26b004b32384e962b6820957ac363df96cd3246298b30a283451",
+      "directory": "lapa-v0.1.2-instruct",
+      "runs": {
+        "warbias_triplets_annotated_uk": {
+          "run_json_sha256": "7f27cc72ec414ec4258fa857dde8d0bfa53ecdff022393d97a01aeb5bd2405bb",
+          "predictions_sha256": "b25ae48bcc2c007596d0f9bb6b43701c47a365deddcd707991f179542ff9a656"
+        },
+        "warbias_uk": {
+          "run_json_sha256": "48094361a3f8a6987122b1afb254976828fb4a3ec5a7c4d84cdeb4f1b667dba5",
+          "predictions_sha256": "7142bd8056f44389cd860e8b9c28a19b823b1fd3463e49f7c1dc0ed64ed4247a"
+        },
+        "warbias_triplets_annotated_en": {
+          "run_json_sha256": "a2f76e11436f37d9e4a6aec06ca5db2481f6e2992dd7fb183e83dba334c3f3d0",
+          "predictions_sha256": "15dbfcc32d336436c2a4d31ca46a8bda02a3602d6bce494970ac634f8265647e"
+        },
+        "warbias_en": {
+          "run_json_sha256": "aa5f436c711f9a2cd50b4bbf7a18ff19745c843c4f0b2c471c62e0b7df236735",
+          "predictions_sha256": "8b8f257b967e50a450604922b0e31068e7f116b9e9bc802864524d3b908a1172"
+        }
+      },
+      "neutral_runs": {
+        "uk": {
+          "run_json_sha256": "95d3efdec464c419d3878260e0df63aa6bc7dead59e0059176d8eac5cc801715",
+          "predictions_sha256": "1c6880aee05013b8ddd65a7e5e9fe2f8f79c1162f6c68033844d22e5cb7730af"
+        },
+        "en": {
+          "run_json_sha256": "fe2a4d23998981595bb780e75cd445ab6a35470b2167287a37cbdc8ef5d5ec0e",
+          "predictions_sha256": "0b7f46cde1dbc571b623fda583a409f47cc1d33093a36ad478b6688c08e6ad40"
+        }
+      },
+      "qa_parsing": {
+        "uk": {
+          "native_policy": "abc_option_text_v2",
+          "analysis_policy": "abc_explicit_choice_v3",
+          "definition": "Accept the native ABC/exact-option forms, Answer:/\u0412\u0456\u0434\u043f\u043e\u0432\u0456\u0434\u044c: prefixes, a unique exact option with one terminal period, or an explicit first answer block followed by a blank line and explanation. Reject conflicting answer declarations, inconsistent label/text pairs and prose without an explicit choice. Strict format still requires a bare letter.",
+          "strict_format": "A single bare A, B or C, ignoring surrounding whitespace and letter case.",
+          "rows": 240,
+          "native_method_counts": {
+            "bare_letter": 98,
+            "punctuated_letter": 142
+          },
+          "analysis_method_counts": {
+            "bare_letter": 98,
+            "punctuated_letter": 142
+          },
+          "changed_choices": [],
+          "changed_choice_count": 0
+        },
+        "en": {
+          "native_policy": "abc_option_text_v2",
+          "analysis_policy": "abc_explicit_choice_v3",
+          "definition": "Accept the native ABC/exact-option forms, Answer:/\u0412\u0456\u0434\u043f\u043e\u0432\u0456\u0434\u044c: prefixes, a unique exact option with one terminal period, or an explicit first answer block followed by a blank line and explanation. Reject conflicting answer declarations, inconsistent label/text pairs and prose without an explicit choice. Strict format still requires a bare letter.",
+          "strict_format": "A single bare A, B or C, ignoring surrounding whitespace and letter case.",
+          "rows": 240,
+          "native_method_counts": {
+            "bare_letter": 132,
+            "labeled_option": 20,
+            "punctuated_letter": 88
+          },
+          "analysis_method_counts": {
+            "bare_letter": 132,
+            "labeled_option": 20,
+            "punctuated_letter": 88
+          },
+          "changed_choices": [],
+          "changed_choice_count": 0
+        }
+      }
+    },
+    {
+      "id": "mamay12b_v2",
+      "repository": "INSAIT-Institute/MamayLM-Gemma-3-12B-IT-v2.0",
+      "revision": "3cb02013b6b37cfe10f4b3da0fcddc1acef7f244",
+      "tokenizer_revision": "3cb02013b6b37cfe10f4b3da0fcddc1acef7f244",
+      "config_sha256": "89795290a04de188c98bded7b65fcc8366d3b4586d883dcc5751395b9cd76c78",
+      "directory": "MamayLM-Gemma-3-12B-IT-v2.0",
+      "runs": {
+        "warbias_triplets_annotated_uk": {
+          "run_json_sha256": "e5f38e04680fe577e2861fa739984b07bfec8fab1e6b03bc4588f56e40ef185b",
+          "predictions_sha256": "79d7bba32b21292fa22e5fe9c6c0b8013783b3beb32019f3e1967ffd57a6da0f"
+        },
+        "warbias_uk": {
+          "run_json_sha256": "154e694d9e6d3bac1dda11edb4a56fea905897f352fadf64dd5d56826dff4333",
+          "predictions_sha256": "b7ba7ef2127a53aaf0e5b2a0c966f89fa50117695adf3b15b264673694db51cf"
+        },
+        "warbias_triplets_annotated_en": {
+          "run_json_sha256": "e2042501c2b732678a5a7dd70665292f2c829892b0600e75de931edc5700018b",
+          "predictions_sha256": "6a037661f8fe8a232b1feb2a17f2b658c05084546ae29d3b3452b1074f9889d6"
+        },
+        "warbias_en": {
+          "run_json_sha256": "2fd5d637ddfccb560099a6553e8b1780b032ef5c111ba72fcac8176ccf4d0365",
+          "predictions_sha256": "ffb8fecbfd010e6a9bbcb8a497857ef88fd7163127bdf08641d994445cd91e9d"
+        }
+      },
+      "neutral_runs": {
+        "uk": {
+          "run_json_sha256": "d64ef4496e08b8596cb96b59de30b1ac7380bee0b6d0f9574a04956fb7eec169",
+          "predictions_sha256": "bfcb3975cb9b69c177b8e1f6269f4209f85b82bd5a3725e05b7394ea9f018ebc"
+        },
+        "en": {
+          "run_json_sha256": "758979f13e744abcf895692660be27295d473e241d4212971d1629b209841f61",
+          "predictions_sha256": "e43b62b08ba9137949c5b3b875add24af2c193b3918223aad0276b8c90dcec0a"
+        }
+      },
+      "qa_parsing": {
+        "uk": {
+          "native_policy": "abc_option_text_v2",
+          "analysis_policy": "abc_explicit_choice_v3",
+          "definition": "Accept the native ABC/exact-option forms, Answer:/\u0412\u0456\u0434\u043f\u043e\u0432\u0456\u0434\u044c: prefixes, a unique exact option with one terminal period, or an explicit first answer block followed by a blank line and explanation. Reject conflicting answer declarations, inconsistent label/text pairs and prose without an explicit choice. Strict format still requires a bare letter.",
+          "strict_format": "A single bare A, B or C, ignoring surrounding whitespace and letter case.",
+          "rows": 240,
+          "native_method_counts": {
+            "bare_letter": 240
+          },
+          "analysis_method_counts": {
+            "bare_letter": 240
+          },
+          "changed_choices": [],
+          "changed_choice_count": 0
+        },
+        "en": {
+          "native_policy": "abc_option_text_v2",
+          "analysis_policy": "abc_explicit_choice_v3",
+          "definition": "Accept the native ABC/exact-option forms, Answer:/\u0412\u0456\u0434\u043f\u043e\u0432\u0456\u0434\u044c: prefixes, a unique exact option with one terminal period, or an explicit first answer block followed by a blank line and explanation. Reject conflicting answer declarations, inconsistent label/text pairs and prose without an explicit choice. Strict format still requires a bare letter.",
+          "strict_format": "A single bare A, B or C, ignoring surrounding whitespace and letter case.",
+          "rows": 240,
+          "native_method_counts": {
+            "bare_letter": 240
+          },
+          "analysis_method_counts": {
+            "bare_letter": 240
+          },
+          "changed_choices": [],
+          "changed_choice_count": 0
+        }
+      }
+    },
+    {
+      "id": "mamay27b_v2",
+      "repository": "INSAIT-Institute/MamayLM-Gemma-3-27B-IT-v2.0",
+      "revision": "ad1bdfed9646939358adfcba9c88bb4031b50ed7",
+      "tokenizer_revision": "ad1bdfed9646939358adfcba9c88bb4031b50ed7",
+      "config_sha256": "7b912e354dd6973e1bc397b7ee4a8ac6c9f406da95e33e5789a3468f71644d15",
+      "directory": "MamayLM-Gemma-3-27B-IT-v2.0",
+      "runs": {
+        "warbias_triplets_annotated_uk": {
+          "run_json_sha256": "48dd455eb1544c9d2acc84e73ba5a15ed12f167040dc7877ac28c8cf843f57a5",
+          "predictions_sha256": "d276e3b5e6681a4fc9512792778ef2a6c1ca28cd6630336f45e8e7ba3ec9c89c"
+        },
+        "warbias_uk": {
+          "run_json_sha256": "8608caccab5cb4368a5446b4e307b3250668e2bbc625d6750c657da1b0409f56",
+          "predictions_sha256": "3913b07af538c3c238f9c8ca13e921a82b070362c2e20c8e3880a2ed3237c514"
+        },
+        "warbias_triplets_annotated_en": {
+          "run_json_sha256": "5d48cc62bd6f5b585d16e0aae2b883641681cc43e82e9bf9e45cf143fd75d3c3",
+          "predictions_sha256": "57ac08717bec66e75983fdd7651ab2dd737b470b35cb46aa8686b70a9965f147"
+        },
+        "warbias_en": {
+          "run_json_sha256": "09e0803308d60991182e61a58ae5706e57c3b898f28c57ba771459fc588012cf",
+          "predictions_sha256": "e4f07fbb8660293d444e48220927c8a5ef5b848c7bc125d28fe316bf0d0afe3f"
+        }
+      },
+      "neutral_runs": {
+        "uk": {
+          "run_json_sha256": "deacae20e28932df050a5089d79e3a4be0e5be3658ac97e75f25dce8346873f5",
+          "predictions_sha256": "7fff86b378bb5eae07de9a2970e4a6653d2bae613e8399e9852c9ee9bce3a3e5"
+        },
+        "en": {
+          "run_json_sha256": "251074af842fea6c84cb95cab3c04ddad33b470dc00cf11011f74ba12fad94c8",
+          "predictions_sha256": "db6f95628c5737a733d343efab0f618cdfaf679b35ab4f84fb72f5121817c372"
+        }
+      },
+      "qa_parsing": {
+        "uk": {
+          "native_policy": "abc_option_text_v2",
+          "analysis_policy": "abc_explicit_choice_v3",
+          "definition": "Accept the native ABC/exact-option forms, Answer:/\u0412\u0456\u0434\u043f\u043e\u0432\u0456\u0434\u044c: prefixes, a unique exact option with one terminal period, or an explicit first answer block followed by a blank line and explanation. Reject conflicting answer declarations, inconsistent label/text pairs and prose without an explicit choice. Strict format still requires a bare letter.",
+          "strict_format": "A single bare A, B or C, ignoring surrounding whitespace and letter case.",
+          "rows": 240,
+          "native_method_counts": {
+            "bare_letter": 240
+          },
+          "analysis_method_counts": {
+            "bare_letter": 240
+          },
+          "changed_choices": [],
+          "changed_choice_count": 0
+        },
+        "en": {
+          "native_policy": "abc_option_text_v2",
+          "analysis_policy": "abc_explicit_choice_v3",
+          "definition": "Accept the native ABC/exact-option forms, Answer:/\u0412\u0456\u0434\u043f\u043e\u0432\u0456\u0434\u044c: prefixes, a unique exact option with one terminal period, or an explicit first answer block followed by a blank line and explanation. Reject conflicting answer declarations, inconsistent label/text pairs and prose without an explicit choice. Strict format still requires a bare letter.",
+          "strict_format": "A single bare A, B or C, ignoring surrounding whitespace and letter case.",
+          "rows": 240,
+          "native_method_counts": {
+            "bare_letter": 240
+          },
+          "analysis_method_counts": {
+            "bare_letter": 240
+          },
+          "changed_choices": [],
+          "changed_choice_count": 0
+        }
+      }
+    }
+  ],
+  "files": {
+    "availability.csv": {
+      "sha256": "2c8e820a1d62f0d98f472395acaaae5526de5b36f7e085645313b5ac7ab0eab9",
+      "bytes": 2194
+    },
+    "evidence_gaps.csv": {
+      "sha256": "525a07097c572c6f25f1e9ec03998f89c1f8f5877abcc992ec6c8a337b57051a",
+      "bytes": 11830
+    },
+    "group_diagnostics.csv": {
+      "sha256": "55ee11ca0807c56979c57f44773b1224ebf349e66d5047c8d2615b96b6f47e3f",
+      "bytes": 601098
+    },
+    "language_contrasts.csv": {
+      "sha256": "70860ee6a4484549aabd6d19a942a0b7f3199280fd1c030cf9b09cdbec9e85fe",
+      "bytes": 328740
+    },
+    "scores.csv": {
+      "sha256": "ff32873d56255637f09f7fee74868f2d3d22d4f733c3cc398dffc06af00b7f48",
+      "bytes": 606223
+    }
+  },
+  "validation": {
+    "status": "passed",
+    "full_runs": 36,
+    "smoke_runs": 72,
+    "exact_repeat_pairs": 36,
+    "full_prediction_rows": 27048,
+    "empty_qa_responses": 0,
+    "nonfinite_likelihoods": 0,
+    "generation_stop_reasons_recorded": false,
+    "original_native_files_preserved": 216,
+    "neutral_native_files_verified": 108,
+    "control_review": {
+      "reviewer_type": "assistant",
+      "human_review": false,
+      "records": 2014
+    },
+    "qa_rescoring": {
+      "responses": 2880,
+      "recovered_explicit_choices": 29,
+      "native_valid_choices_unchanged": true,
+      "strict_format_results_unchanged": true,
+      "native_files_unchanged": 324
+    }
+  },
+  "primary_prior_normalised_ss": {
+    "status": "available",
+    "reason": "Complete source-bound control likelihoods verified for every selected model."
+  },
+  "reproduction_inputs": {
+    "protocol/dataset.json": {
+      "sha256": "6f83eed95341fbf3fe6e846f9dcbb148f6387bc166461bd6483824af7b427732",
+      "bytes": 5292
+    },
+    "protocol/qa.json": {
+      "sha256": "e8307a4d480603321705ec8135963b59f4df53a9e493ee5152434df9deecd218",
+      "bytes": 4767
+    },
+    "protocol/dataset_metadata_corrections.json": {
+      "sha256": "1f94b70642faf37bd4f76b983583d2655f79627cf66f61ef9040a273bdd99ca7",
+      "bytes": 1145
+    },
+    "evaluation/warbias_baseline/profile_mapping.jsonl": {
+      "sha256": "13a7248f9dfc21fa3e5e9bcef8fe7746efa4b328ada86adb195aa0dc483c8da5",
+      "bytes": 345012
+    },
+    "evaluation/warbias_baseline/models.json": {
+      "sha256": "bbb36f64ae4e17bf15bb99259639f9b07815fd2eb859c303cd46d8489dcd66e2",
+      "bytes": 2222
+    },
+    "evaluation/warbias_baseline/model_assets.json": {
+      "sha256": "21222bf4543b2c90f894732d3d1def36cdea79cf75f0a52b43b3122a5ccf3bf2",
+      "bytes": 13973
+    },
+    "evaluation/warbias_baseline/neutral_controls.jsonl": {
+      "sha256": "d448327dbb3d835d2a090daefaa2bb242f5c44d6f44fe71e75e7bee1e01b8f7a",
+      "bytes": 2805109
+    },
+    "evaluation/warbias_baseline/neutral_rules.json": {
+      "sha256": "37b58811b5114d22e3f37699ad7855623100a72767d5d93802c5b3ff227852ff",
+      "bytes": 10236
+    }
+  },
+  "neutral_release": {
+    "bundle_sha256": "fb83766a4ce61e0f7b212b85ecf022f7fabaa34955b999071f348b84299c550a",
+    "models_sha256": "4fa1e7bce0df4e220049dca1a26f2edf40f9b1f39c1f46bf6935b39da0008a7e",
+    "records_sha256": "d448327dbb3d835d2a090daefaa2bb242f5c44d6f44fe71e75e7bee1e01b8f7a",
+    "rules_sha256": "37b58811b5114d22e3f37699ad7855623100a72767d5d93802c5b3ff227852ff",
+    "source_bundle_sha256": "09f900397ffca6372a73c1936c348c168dc1411b924a520fd0042a2b6736865c",
+    "reviewer_type": "assistant"
+  },
+  "neutral_inference_source": {
+    "checksums_sha256": "ddf8d5824607590428d698a2a860322c70eaf0d84c5356f051311a0d0dc81ad3",
+    "release_metadata_sha256": "34bccaf1d04a6e106f170824f1b65c973410e5c73041f1f0e5a5f8eb791b39d1",
+    "compatibility": "Identical inference and native scoring; analysis is versioned separately.",
+    "code_identity_sha256": "65ac4f97b37a95e1ab93aa7d349feb0ef198f746584f9c839b51d30210067de5"
+  },
+  "qa_parsing": {
+    "native_policy": "abc_option_text_v2",
+    "analysis_policy": "abc_explicit_choice_v3",
+    "definition": "Accept the native ABC/exact-option forms, Answer:/\u0412\u0456\u0434\u043f\u043e\u0432\u0456\u0434\u044c: prefixes, a unique exact option with one terminal period, or an explicit first answer block followed by a blank line and explanation. Reject conflicting answer declarations, inconsistent label/text pairs and prose without an explicit choice. Strict format still requires a bare letter.",
+    "strict_format": "A single bare A, B or C, ignoring surrounding whitespace and letter case."
+  },
+  "analysis_code_identity_sha256": "843a3ceef82e773abf46e9cccd759f87c39902302ca78fc6c9117c288198941c",
+  "inference_code_identity_sha256": "0d845c3484887d7f31d3ace648ad7ab349779bf6fb4eb3c88dff9c1df69eba93"
+}

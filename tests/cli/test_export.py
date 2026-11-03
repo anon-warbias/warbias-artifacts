@@ -1,0 +1,549 @@
+"""Portable producer export integrity, exclusions and independent verification."""
+
+import importlib.util
+import json
+import os
+import shutil
+import subprocess
+import sys
+from pathlib import Path
+
+import pytest
+
+from warbias_kit.dataset_workflow import load_inputs
+from warbias_kit.warbias.cohort import load_cohort
+
+ROOT = Path(__file__).resolve().parents[2]
+SPEC = importlib.util.spec_from_file_location("export_dataset", ROOT / "scripts/export_dataset.py")
+exporter = importlib.util.module_from_spec(SPEC)
+SPEC.loader.exec_module(exporter)
+
+
+@pytest.fixture
+def exported(tmp_path):
+    return exporter.export(ROOT, tmp_path / "export")
+
+
+def test_export_contains_maintained_source_and_is_reproducible(exported, tmp_path):
+    second = exporter.export(ROOT, tmp_path / "second")
+    assert (exported / exporter.MANIFEST).read_bytes() == (second / exporter.MANIFEST).read_bytes()
+    assert exporter.verify(exported) > 50
+    assert (exported / "src/warbias_kit/warbias/provider.py").is_file()
+    assert (exported / "protocol/pilot_snapshots.json").is_file()
+    assert (exported / "notebooks/04_sample_translation_comet.ipynb").is_file()
+    assert len(list((exported / "notebooks").glob("[0-9][0-9]_*.ipynb"))) == 14
+    assert (exported / "notebooks/08_warbias_baseline.ipynb").is_file()
+    for relative in (
+        "src/warbias_kit/unlearning/trainer.py",
+        "configs/unlearning/warbias_final.json",
+        "tests/unlearning/test_unlearning_trainer.py",
+        "notebooks/12_after_intervention.ipynb",
+        "requirements-unlearning.txt",
+        "evaluator/pyproject.toml",
+        "evaluator/LICENSE.md",
+        "evaluator/src/lm_eval/benchmark/warbias/baseline.py",
+        "docs/evaluation.md",
+        "scripts/prepare_warbias_evaluation.py",
+        "scripts/run_warbias_baseline.py",
+        "evaluation/warbias_baseline/models.json",
+        "evaluation/warbias_baseline/model_assets.json",
+        "evaluation/warbias_baseline/profile_mapping.jsonl",
+        "evaluation/warbias_baseline/neutral_controls.jsonl",
+        "evaluation/warbias_baseline/neutral_rules.json",
+    ):
+        assert (exported / relative).is_file()
+    assert (exported / "protocol/history/matrix_full.csv").is_file()
+    assert not (exported / "protocol/inputs/matrix_full.csv").exists()
+    assert (exported / "protocol/inputs/source_feedback.jsonl").is_file()
+    inputs = load_inputs(exported)
+    assert len(inputs["source_feedback"]) == 2
+    assert sum(row["source_type"] == "feedback" for row in inputs["matrix_reviewed"]) == 3
+    for relative in (
+        ".env",
+        ".git",
+        ".venv",
+        "outputs",
+        "runs",
+        "evaluation/unlearning",
+        "evaluation/stereoset",
+        "notebooks/executed",
+        "notebooks/unlearning",
+    ):
+        assert not (exported / relative).exists()
+    assert "file://" not in (exported / "pyproject.toml").read_text()
+    assert 'name = "warbias_kit-warbias"' in (exported / "pyproject.toml").read_text()
+    assert json.loads((exported / exporter.MANIFEST).read_text())["subproject"] == "warbias"
+    with pytest.raises(ValueError, match="must not exist"):
+        exporter.export(ROOT, exported)
+
+
+def test_export_excludes_host_configuration_and_model_weights(exported, tmp_path):
+    local = exported / "configs/unlearning/local.json"
+    local.write_text('{"models_root": "private-model-cache"}\n')
+    weights = exported / "models/checkpoint"
+    weights.mkdir(parents=True)
+    (weights / "weights.safetensors").write_bytes(b"local weights")
+    result = exporter.export(exported, tmp_path / "portable")
+    assert not (result / "configs/unlearning/local.json").exists()
+    assert not (result / "models").exists()
+    assert (result / "configs/unlearning/warbias_final.json").is_file()
+
+
+def test_broader_repository_exports_only_its_warbias_child_without_changes(exported, tmp_path):
+    repository = tmp_path / "warbias_kit"
+    shutil.copytree(exported, repository / "warbias")
+    sibling_files = {
+        "README.md": b"Broader project documentation.\n",
+        "requirements.txt": b"legacy-project-dependency\n",
+        "notebooks/stereoset_filtering/reviewed.csv": b"term,decision\nfixture,keep\n",
+        "notebooks/executed/stereoset.ipynb": b"Unrelated saved notebook outputs.\n",
+        "evaluation/stereoset_uk/evaluate.py": b"# Existing project evaluator.\n",
+        "configs/project-private.json": b'{"secret":"sibling-only-fixture"}\n',
+    }
+    for relative, content in sibling_files.items():
+        path = repository / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(content)
+    before = {
+        str(path.relative_to(repository)): path.read_bytes()
+        for path in repository.rglob("*")
+        if path.is_file()
+    }
+    result = exporter.export(repository, tmp_path / "isolated")
+    after = {
+        str(path.relative_to(repository)): path.read_bytes()
+        for path in repository.rglob("*")
+        if path.is_file()
+    }
+    assert before == after
+    assert (result / exporter.MANIFEST).read_bytes() == (exported / exporter.MANIFEST).read_bytes()
+    for relative, content in sibling_files.items():
+        assert not (result / relative).exists() or (result / relative).read_bytes() != content
+    assert not (result / "warbias").exists()
+    assert exporter.verify(result) > 50
+
+
+@pytest.mark.parametrize("main_namespace", ["the-project", "warbias_kit"])
+def test_repository_prefers_general_artifacts_over_full_taxonomy_sibling(
+    exported, tmp_path, main_namespace
+):
+    repository = tmp_path / "repository"
+    artifact = repository / "warbias-artifacts"
+    shutil.copytree(exported, artifact)
+    main = repository / "warbias"
+    provider = main / "src" / main_namespace / "warbias/provider.py"
+    provider.parent.mkdir(parents=True)
+    provider.write_text("# Full dataset generation provider.\n")
+    (main / "pyproject.toml").write_text('[project]\nname = "full-dataset"\n')
+    taxonomy = main / "protocol/inputs/cohort_taxonomy.csv"
+    taxonomy.parent.mkdir(parents=True)
+    taxonomy.write_text(
+        "case_id,case_scope\n"
+        + "".join(f"full-{index:03d},general\n" for index in range(119))
+        + "".join(f"local-{index:03d},local\n" for index in range(6))
+    )
+    assert exporter.source_root(repository) == artifact.resolve()
+    result = exporter.export(repository, tmp_path / "general-export")
+    assert (result / exporter.MANIFEST).read_bytes() == (exported / exporter.MANIFEST).read_bytes()
+    assert (result / "protocol/inputs/cohort_taxonomy.csv").read_bytes() != taxonomy.read_bytes()
+    cohort = load_cohort(result)
+    assert (cohort["summary"]["cases"], cohort["summary"]["items"]) == (119, 1006)
+    assert {row["case_scope"] for row in cohort["taxonomy"]} == {"general"}
+
+
+@pytest.mark.parametrize("invalid_artifact", ["directory", "file", "symlink"])
+def test_invalid_dedicated_artifact_does_not_fall_back_to_legacy_sibling(
+    exported, tmp_path, invalid_artifact
+):
+    repository = tmp_path / "repository"
+    shutil.copytree(exported, repository / "warbias")
+    artifact = repository / "warbias-artifacts"
+    if invalid_artifact == "directory":
+        artifact.mkdir()
+        (artifact / "pyproject.toml").write_text('[project]\nname = "incomplete"\n')
+    elif invalid_artifact == "file":
+        artifact.write_text("Not a package directory.\n")
+    else:
+        artifact.symlink_to(exported, target_is_directory=True)
+    with pytest.raises(ValueError, match="symlink|Select the project repository"):
+        exporter.export(repository, tmp_path / "rejected")
+    assert not (tmp_path / "rejected").exists()
+
+
+def test_standalone_export_can_be_exported_again(exported, tmp_path):
+    copied = exporter.export(exported, tmp_path / "copy")
+    assert (copied / exporter.MANIFEST).read_bytes() == (exported / exporter.MANIFEST).read_bytes()
+
+
+@pytest.mark.parametrize("relative", [".git", "nested/.git"])
+def test_verifier_rejects_git_metadata_outside_the_file_manifest(exported, relative):
+    path = exported / relative
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("gitdir: private-checkout\n")
+    with pytest.raises(ValueError, match="Git metadata"):
+        exporter.verify(exported)
+
+
+@pytest.mark.parametrize("location", ["notebook", "cell", "output"])
+def test_export_rejects_authorship_metadata(exported, tmp_path, location):
+    path = exported / "notebooks/01_ukrainian_pilot.ipynb"
+    notebook = json.loads(path.read_text())
+    cell = next(cell for cell in notebook["cells"] if cell["cell_type"] == "code")
+    if location == "notebook":
+        metadata = notebook["metadata"]
+    elif location == "cell":
+        metadata = cell["metadata"]
+    else:
+        cell["outputs"] = [{"output_type": "display_data", "data": {}, "metadata": {}}]
+        metadata = cell["outputs"][0]["metadata"]
+    metadata["authors"] = [{"name": "Example Author"}]
+    path.write_text(json.dumps(notebook))
+    with pytest.raises(ValueError, match="author and machine identities"):
+        exporter.export(exported, tmp_path / "rejected")
+
+
+@pytest.mark.parametrize(
+    "style", ["windows", "windows_lowercase", "mac_temporary", "mac_alias", "jupiter"]
+)
+def test_export_rejects_additional_machine_paths(exported, tmp_path, style):
+    if style.startswith("windows"):
+        users = "users" if style == "windows_lowercase" else "Users"
+        personal = "C:" + "\\" + users + "\\example\\model"
+    elif style == "jupiter":
+        personal = "/e/" + "project1/example/model"
+    elif style == "mac_alias":
+        personal = "/var" + "/folders/example/model"
+    else:
+        personal = "/private" + "/var" + "/folders/example/model"
+    (exported / "configs/private.json").write_text(json.dumps({"model_path": personal}))
+    with pytest.raises(ValueError, match="Machine-specific path"):
+        exporter.export(exported, tmp_path / "rejected")
+
+
+@pytest.mark.parametrize("linked_child", [False, True])
+def test_source_boundary_rejects_symlinked_root_or_warbias_child(exported, tmp_path, linked_child):
+    source = tmp_path / "source"
+    if linked_child:
+        source.mkdir()
+        (source / "warbias").symlink_to(exported, target_is_directory=True)
+    else:
+        source.symlink_to(exported, target_is_directory=True)
+    with pytest.raises(ValueError, match="symlink"):
+        exporter.export(source, tmp_path / "rejected")
+    assert not (tmp_path / "rejected").exists()
+
+
+def test_manifest_preserves_legacy_verification_and_rejects_other_subprojects(exported):
+    path = exported / exporter.MANIFEST
+    manifest = json.loads(path.read_text())
+    del manifest["subproject"]
+    path.write_text(json.dumps(manifest))
+    assert exporter.verify(exported) > 50
+    manifest["subproject"] = "another-project"
+    path.write_text(json.dumps(manifest))
+    with pytest.raises(ValueError, match="Unsupported"):
+        exporter.verify(exported)
+
+
+@pytest.mark.parametrize("damage", ["changed", "missing", "hidden"])
+def test_manifest_detects_changed_missing_and_hidden_files(exported, damage):
+    target = exported / "src/warbias_kit/io.py"
+    if damage == "changed":
+        target.write_text("# changed\n")
+    elif damage == "missing":
+        target.unlink()
+    else:
+        (exported / ".env").write_text("UNEXPECTED=value\n")
+    with pytest.raises(ValueError, match="manifest mismatch"):
+        exporter.verify(exported)
+
+
+def test_verifier_is_standalone_and_checks_import_origin(exported, tmp_path):
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-I",
+            str(exported / "scripts/export_dataset.py"),
+            "verify",
+            "--directory",
+            str(exported),
+        ],
+        cwd=tmp_path,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert result.returncode == 0, result.stderr
+    assert "Verified" in result.stdout
+    with pytest.raises(ValueError, match="this export's src tree"):
+        exporter.verify(exported, check_imports=True)
+
+
+def test_export_imports_and_cli_work_without_the_parent_working_directory(exported, tmp_path):
+    environment = {
+        **os.environ,
+        "PYTHONPATH": os.pathsep.join([str(exported / "src"), str(exported / "evaluator/src")]),
+    }
+    checked = subprocess.run(
+        [
+            sys.executable,
+            str(exported / "scripts/export_dataset.py"),
+            "verify",
+            "--directory",
+            str(exported),
+            "--check-imports",
+        ],
+        cwd=tmp_path,
+        env=environment,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert checked.returncode == 0, checked.stderr
+    doctor = subprocess.run(
+        [sys.executable, "-m", "warbias_kit", "doctor"],
+        cwd=tmp_path,
+        env=environment,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert doctor.returncode == 0, doctor.stderr
+    assert json.loads(doctor.stdout)["network_requests"] == 0
+
+
+@pytest.mark.parametrize("failure", ["symlink", "credential", "machine_path", "notebook_state"])
+def test_source_export_rejects_nonportable_or_private_inputs(exported, tmp_path, failure):
+    if failure == "symlink":
+        (exported / "configs/linked.json").symlink_to(ROOT / "pyproject.toml")
+    elif failure == "credential":
+        (exported / "configs/private.json").write_text(
+            json.dumps({"keychain": {"service": "private"}})
+        )
+    elif failure == "machine_path":
+        personal = "/" + "Users" + "/example/private-model"
+        (exported / "configs/private.json").write_text(json.dumps({"model_path": personal}))
+    else:
+        path = exported / "notebooks/01_ukrainian_pilot.ipynb"
+        notebook = json.loads(path.read_text())
+        notebook["cells"][1]["execution_count"] = None
+        notebook["cells"][1]["outputs"] = [
+            {"output_type": "stream", "name": "stdout", "text": "local output"}
+        ]
+        path.write_text(json.dumps(notebook))
+    with pytest.raises(ValueError):
+        exporter.export(exported, tmp_path / "rejected")
+    assert not (tmp_path / "rejected").exists()
+
+
+def test_export_preserves_successful_notebook_outputs(exported, tmp_path):
+    path = exported / "notebooks/01_ukrainian_pilot.ipynb"
+    notebook = json.loads(path.read_text())
+    count = 0
+    for cell in notebook["cells"]:
+        if cell["cell_type"] == "code":
+            count += 1
+            cell["execution_count"] = count
+            cell["outputs"] = []
+    last = next(cell for cell in reversed(notebook["cells"]) if cell["cell_type"] == "code")
+    last["outputs"] = [
+        {
+            "output_type": "execute_result",
+            "execution_count": count,
+            "data": {"text/plain": "{'conditions': 80}"},
+            "metadata": {},
+        }
+    ]
+    path.write_text(json.dumps(notebook))
+    result = exporter.export(exported, tmp_path / "executed")
+    assert (result / "notebooks/01_ukrainian_pilot.ipynb").read_bytes() == path.read_bytes()
+
+
+@pytest.mark.parametrize("damage", ["error", "partial", "duplicate_count", "result_count"])
+def test_export_rejects_failed_or_inconsistent_notebook_runs(exported, tmp_path, damage):
+    path = exported / "notebooks/01_ukrainian_pilot.ipynb"
+    notebook = json.loads(path.read_text())
+    cells = [cell for cell in notebook["cells"] if cell["cell_type"] == "code"]
+    for count, cell in enumerate(cells, 1):
+        cell["execution_count"] = count
+        cell["outputs"] = []
+    if damage == "error":
+        cells[-1]["outputs"] = [
+            {"output_type": "error", "ename": "ValueError", "evalue": "bad input", "traceback": []}
+        ]
+    elif damage == "partial":
+        cells[-1]["execution_count"] = None
+    elif damage == "duplicate_count":
+        cells[-1]["execution_count"] = 1
+    else:
+        cells[-1]["outputs"] = [
+            {
+                "output_type": "execute_result",
+                "execution_count": 1,
+                "data": {"text/plain": "stale result"},
+                "metadata": {},
+            }
+        ]
+    path.write_text(json.dumps(notebook))
+    with pytest.raises(ValueError):
+        exporter.export(exported, tmp_path / "rejected")
+    assert not (tmp_path / "rejected").exists()
+
+
+@pytest.mark.parametrize(
+    "damage",
+    [
+        "csv",
+        "dataset",
+        "models",
+        "model_assets",
+        "profile_mapping",
+        "extra_table",
+        "missing_table",
+        "missing_manifest",
+        "missing_input",
+        "schema",
+        "kind",
+        "bytes",
+    ],
+)
+def test_export_rejects_stale_or_incomplete_baseline_results(exported, tmp_path, damage):
+    results = exported / "evaluation/warbias_baseline/results"
+    path = results / "manifest.json"
+    manifest = json.loads(path.read_text())
+    if damage == "csv":
+        with (results / "scores.csv").open("a") as stream:
+            stream.write("\n")
+    elif damage == "dataset":
+        with (exported / "data/uk.jsonl").open("a") as stream:
+            stream.write("\n")
+    elif damage in {"models", "model_assets", "profile_mapping"}:
+        suffix = "jsonl" if damage == "profile_mapping" else "json"
+        target = exported / f"evaluation/warbias_baseline/{damage}.{suffix}"
+        with target.open("a") as stream:
+            stream.write(" ")
+    elif damage == "extra_table":
+        (results / "extra.csv").write_text("unexpected\n")
+    elif damage == "missing_table":
+        (results / "scores.csv").unlink()
+    elif damage == "missing_manifest":
+        path.unlink()
+    else:
+        if damage == "missing_input":
+            del manifest["reproduction_inputs"]["evaluation/warbias_baseline/models.json"]
+        elif damage == "schema":
+            manifest["schema_version"] = 2
+        elif damage == "kind":
+            manifest["kind"] = "unverified_results"
+        else:
+            manifest["files"]["scores.csv"]["bytes"] += 1
+        path.write_text(json.dumps(manifest))
+    with pytest.raises(ValueError, match="Baseline result"):
+        exporter.export(exported, tmp_path / "rejected")
+    assert not (tmp_path / "rejected").exists()
+
+
+@pytest.mark.parametrize("relative", ["", ".", "../outside.csv", "/outside.csv", "C:\\outside.csv"])
+def test_result_binding_rejects_nonportable_paths(exported, relative):
+    with pytest.raises(ValueError, match="Baseline result"):
+        exporter._result_binding(
+            exported, relative, {"sha256": "a" * 64, "bytes": 0}, require_size=True
+        )
+
+
+def test_source_export_allows_an_omitted_baseline_results_bundle(exported, tmp_path):
+    shutil.rmtree(exported / "evaluation/warbias_baseline/results")
+    result = exporter.export(exported, tmp_path / "without-results")
+    assert not (result / "evaluation/warbias_baseline/results").exists()
+    assert exporter.verify(result) > 50
+
+
+@pytest.fixture
+def neutral_result_bindings(exported):
+    path = exported / "evaluation/warbias_baseline/results/manifest.json"
+    manifest = json.loads(path.read_text())
+    neutral = {"reviewer_type": "assistant"}
+    for relative, field in exporter._NEUTRAL_INPUTS.items():
+        source = exported / relative
+        binding = {"sha256": exporter._hash(source), "bytes": source.stat().st_size}
+        manifest["reproduction_inputs"][relative] = binding
+        neutral[field] = binding["sha256"]
+    manifest["neutral_release"] = neutral
+    manifest["primary_prior_normalised_ss"] = {"status": "available"}
+    path.write_text(json.dumps(manifest))
+    for relative in exporter._NEUTRAL_INPUTS:
+        manifest["source"]["external_inputs"].pop(relative, None)
+    manifest["source"]["snapshot_sha256"] = exporter.hashlib.sha256(
+        json.dumps(
+            manifest["source"]["external_inputs"], sort_keys=True, separators=(",", ":")
+        ).encode()
+    ).hexdigest()
+    path.write_text(json.dumps(manifest))
+    return exported, path, manifest
+
+
+def test_export_binds_both_neutral_inputs_to_the_saved_analysis(neutral_result_bindings, tmp_path):
+    source, _, manifest = neutral_result_bindings
+    assert len(manifest["reproduction_inputs"]) == 8
+    result = exporter.export(source, tmp_path / "with-controls")
+    assert exporter.verify(result) > 50
+    for relative in exporter._NEUTRAL_INPUTS:
+        assert (result / relative).read_bytes() == (source / relative).read_bytes()
+
+
+@pytest.mark.parametrize(
+    "damage",
+    [
+        "records_file",
+        "rules_file",
+        "records_binding",
+        "rules_binding",
+        "records_declaration",
+        "rules_declaration",
+        "missing_declaration",
+        "orphaned_bindings",
+    ],
+)
+def test_export_rejects_unbound_or_changed_neutral_inputs(
+    neutral_result_bindings, tmp_path, damage
+):
+    source, manifest_path, manifest = neutral_result_bindings
+    records, rules = exporter._NEUTRAL_INPUTS
+    if damage in {"records_file", "rules_file"}:
+        target = source / (records if damage == "records_file" else rules)
+        with target.open("a") as stream:
+            stream.write("\n")
+    elif damage in {"records_binding", "rules_binding"}:
+        del manifest["reproduction_inputs"][records if damage == "records_binding" else rules]
+    elif damage in {"records_declaration", "rules_declaration"}:
+        field = "records_sha256" if damage == "records_declaration" else "rules_sha256"
+        manifest["neutral_release"][field] = "0" * 64
+    else:
+        del manifest["neutral_release"]
+        if damage == "orphaned_bindings":
+            manifest["primary_prior_normalised_ss"]["status"] = "unavailable"
+    manifest_path.write_text(json.dumps(manifest))
+    with pytest.raises(ValueError, match="Baseline result"):
+        exporter.export(source, tmp_path / "rejected")
+    assert not (tmp_path / "rejected").exists()
+
+
+@pytest.mark.parametrize("damage", ["revision", "binding"])
+def test_export_rejects_invalid_external_source_bindings(exported, tmp_path, damage):
+    path = exported / "evaluation/warbias_baseline/results/manifest.json"
+    manifest = json.loads(path.read_text())
+    if damage == "revision":
+        manifest["source"]["snapshot_sha256"] = "0" * 64
+    else:
+        manifest["source"]["external_inputs"]["data/uk.jsonl"]["sha256"] = "0" * 64
+    path.write_text(json.dumps(manifest))
+    with pytest.raises(ValueError, match="Baseline result"):
+        exporter.export(exported, tmp_path / "rejected")
+
+
+def test_export_rejects_identifying_dependency_references(exported, tmp_path):
+    path = exported / "docs/evaluation.md"
+    token = bytes.fromhex("666169725f756b").decode()
+    path.write_text(path.read_text() + "\nimport " + token + "\n")
+    with pytest.raises(ValueError, match="Identifying project reference"):
+        exporter.export(exported, tmp_path / "rejected")

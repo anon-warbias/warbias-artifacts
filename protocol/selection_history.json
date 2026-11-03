@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "scope": "Recorded selection changes; historical reference exclusions do not filter the current design.",
+  "sources": {
+    "case_changes": {
+      "path": "protocol/history/case_changes.json",
+      "sha256": "af6c8c74e7262a6f9bd9437774e6f5daba29ebccfbd8dd1b4bb47978fbb0497b",
+      "source_artifacts": [
+        {
+          "artifact": "historical_generation_matrix",
+          "sha256": "b67f788f66ac8c00416e513ed81e97bdad21d712df3814bb4693abc175329a5c"
+        },
+        {
+          "artifact": "construction_case_specifications",
+          "sha256": "bdca118dba323d2c42e066f740ddda2000eafef1cb576aa564854839830350fc"
+        }
+      ]
+    },
+    "profile_replacements": {
+      "path": "protocol/inputs/profile_replacements.json",
+      "sha256": "9eea74f23eb786f62f9929cf0ae1d10418fe6a006ea70e3a3cb13c49f776da2f",
+      "source_artifact": "occupation_filter_correction.json",
+      "exact_bytes": true,
+      "pairwise_replacement_mapping_recorded": false
+    },
+    "profile_exclusions": {
+      "path": "protocol/inputs/profile_exclusions.json",
+      "sha256": "b0099f2df352e108c834967fdc3bc289e585195febe968211c1193bfa1987cb2",
+      "exact_bytes": true,
+      "repository": "the-project/WarBias",
+      "revision": "b4917bfc7a0ac53057b71253e19a93525503a4c32e7414cacc0612ad9fe5ecbe",
+      "source_path": "metadata/profile_exclusions.json",
+      "changes": [
+        {
+          "criterion": "Occupation-qualified actor profiles",
+          "revision_sha256": "65df26225acd1603c6cc5b1da9442899193cce316625fdd8b7ca6ccedca67734"
+        },
+        {
+          "criterion": "Older women veterans",
+          "revision_sha256": "4b5955672d4a3eb39702d8f4f10c23a5ddd8767b20d664ca0f6533ab099628a4"
+        }
+      ]
+    }
+  }
+}
